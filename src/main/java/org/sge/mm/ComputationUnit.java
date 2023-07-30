@@ -153,26 +153,19 @@ public class ComputationUnit {
                 .layer(new DenseLayer.Builder() //create the input and hidden layer
                         .nIn(countInputNeurons)
                         .activation(activation)
-                        .nOut(countInputNeurons+countHiddenLayerNeurons)
+                        .nOut(countInputNeurons*4)
                         .build())
-                /*
+                
                 .layer(new DenseLayer.Builder() //create hidden layer 2
-                        .nIn(countInputNeurons+countHiddenLayerNeurons)
+                        .nIn(countInputNeurons*4)
                         .activation(activation)
-                        .nOut(countInputNeurons+countHiddenLayerNeurons)
+                        .nOut(countInputNeurons*4)
                         .build())
-                */
-                .layer(new OutputLayer.Builder() //create output layer
-                        .activation(activation)
+                
+                .layer(new OutputLayer.Builder(LossFunction.NEGATIVELOGLIKELIHOOD) //create output layer
+                        .activation(Activation.SOFTMAX)
                         .nOut(countOutputNeurons)
-                        // .lossFunction(LossFunctions.LossFunction.SQUARED_LOSS) // 78 loops, good output vectos
-                        .lossFunction(LossFunctions.LossFunction.MSE) // 75 loops, good output vectos
-                        //.lossFunction(LossFunctions.LossFunction.L1) //   > 200 loops
-                              // .lossFunction(LossFunctions.LossFunction.L2) //  80 loops, good output vectors
-                        //.lossFunction(LossFunctions.LossFunction.SQUARED_HINGE) // > 100 loops
-                              //.lossFunction(LossFunctions.LossFunction.MEAN_SQUARED_LOGARITHMIC_ERROR) // 79 loops, good output vectors
-                        // .lossFunction(LossFunctions.LossFunction.WASSERSTEIN) //  > 100 loops
-                       .build())
+                        .build())
                 .build(); 	
     	
         nn = new MultiLayerNetwork(conf);
@@ -182,6 +175,43 @@ public class ComputationUnit {
 
 
 	private void createNetSecondLayer(int layerCountInputNeurons) {
+		Activation activation = Activation.SIGMOID;
+		
+		int countAdditionalNeurons = layerCountInputNeurons*4; //24
+		
+        MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder()
+                .seed((int)(Math.random() * 1000)) //include a random seed for reproducibility
+                .activation(activation)
+                .weightInit(WeightInit.XAVIER)
+                .updater(new Nadam())
+                .l2(LEARNING_RATE * 0.001)    // regularize learning model // * 0.005
+                .list()
+                .layer(new DenseLayer.Builder() //create the input and hidden layer
+                        .nIn(layerCountInputNeurons)
+                        .activation(activation)
+                        .nOut(layerCountInputNeurons+countAdditionalNeurons)
+                        .build())
+                /*
+                .layer(new DenseLayer.Builder() //create hidden layer
+                        .nIn(layerCountInputNeurons+countAdditionalNeurons)
+                        .activation(activation)
+                        .nOut(layerCountInputNeurons+countAdditionalNeurons)
+                        .build())
+                        */
+                .layer(new OutputLayer.Builder() //create output layer
+                        .activation(activation)
+                        .nOut(countOutputNeurons)
+                        .lossFunction(LossFunctions.LossFunction.MSE) 
+                       .build())
+                .build(); 	
+    	
+        nn2 = new MultiLayerNetwork(conf);
+        nn2.init();
+	}
+
+
+
+	private void createNetSecondLayerColorCoded(int layerCountInputNeurons) {
 		Activation activation = Activation.SIGMOID;
 		
 		int countAdditionalNeurons = layerCountInputNeurons*4; //24
@@ -1143,31 +1173,11 @@ public class ComputationUnit {
 			if(verbose) System.out.println("learning vector:        " + op);
 
 			if(moveNumber == 1) { 
-				if(guessIs(guess.inputVector, 0, 0)) {
-					
-				} 
-				else if(guessIs(guess.inputVector, 0, 1)) {
-			 	} 
-				else if(guessIs(guess.inputVector, 1, 1)) {
-				
-				} 
-				else if(guessIs(guess.inputVector, 1, 0)) {
-			
-				} 
-				else if(guessIs(guess.inputVector, 2, 0)) {
-		
-				} 
-				else {
-					System.out.println("invalid input vector: " + guess.inputVector);
-					System.exit(1);
-				}
 				nn.fit(guess.inputVector, op);	
-					
-				
         	}
 			
         	if(moveNumber == 2) { 
-    			//!! nn2.fit(guess.inputVector, op);		
+    			nn2.fit(guess.inputVector, op);		
 
     			// if(board.getCodeToFind().contentEquals("22")) { 
         		// double[] da = {  1.0000,         0,         0,         0,         0,    1.0000,         0,         0,         0,         0,         0,         0,         0,         0,         0,    1.0000,         0,         0,         0,    1.0000,         0,         0,         0,         0 };

@@ -29,6 +29,7 @@ public class ComputationUnit {
 	public static final int ALGO_EXCLUDE = 1; 
 	public static final int ALGO_Q = 2; 
 	public static final int ALGO_RANDOM = 3; 
+	public static final int ALGO_NN_WITH_DUPLICATES = 4; 
 
 	public static final int SET_RANDOMVALUES_FOR_WEIGHTS_SET_BY_NN = 0; 
 	public static final int SET_ALL_WEIGHTS_WITH_THE_SAME_VALUE = 1; 
@@ -756,6 +757,27 @@ public class ComputationUnit {
 	}
 	
 	
+	public Guess getGuessAlgoNNWithDuplicates(List<Move> listOfAlreadyPlayedMoves, int moveNumber, boolean verbose) {
+		INDArray inputVector = computeInputVector(listOfAlreadyPlayedMoves);
+
+        INDArray resultVector = feedForward(moveNumber, inputVector);		
+
+        if(verbose) System.out.println("input vector:\n" + inputVector.toString());
+		if(verbose) System.out.println("output vector:\n" + resultVector.toString());
+		
+		int winnerNeuronIndex = getWinnerNeuronNumberWithDuplicates(resultVector, listOfAlreadyPlayedMoves);
+		if(verbose) System.out.println("winnerNeuronIndex: " + winnerNeuronIndex);
+		
+		String guessCode = MathSge.convertDecTo(countColors, winnerNeuronIndex, countDigits);
+		if(verbose) System.out.println("guess color combination: " + guessCode);
+		
+		Guess guess = new Guess();
+		guess.code  = guessCode;
+		
+		return guess; 
+	}
+	
+	
 	public Guess getGuessAlgoRLPlaying(List<Move> listOfAlreadyPlayedMoves, int moveNumber, boolean verbose) {
 		INDArray inputVector = computeInputVector(listOfAlreadyPlayedMoves);
         INDArray resultVector = feedForward(moveNumber, inputVector);		
@@ -845,6 +867,22 @@ public class ComputationUnit {
 					winnerIndex = i;
 					winnerValue = value;
 				}
+			}
+		}
+		
+		return winnerIndex;
+	}
+
+	
+	public int getWinnerNeuronNumberWithDuplicates(INDArray outputNeurons, List<Move> listOfAlreadyPlayedMoves) {
+		// performance
+		int winnerIndex = 0;
+		double winnerValue = -2;
+		for(int i=0; i<countOutputNeurons; i++) {
+			double value = outputNeurons.getDouble(0, i);
+			if(value > winnerValue) {
+				winnerValue = value;
+				winnerIndex = i;
 			}
 		}
 		

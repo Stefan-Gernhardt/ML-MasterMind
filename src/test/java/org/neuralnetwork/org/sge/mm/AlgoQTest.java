@@ -254,12 +254,8 @@ public class AlgoQTest {
 		double winrate2 = 0.0;
 		double winrate3 = 0.0;
 		
-		int cdw = GlobalSge.countWarningsDuplicateMoves;
 		for(int i=0; i<100000; i++) { 
 			masterMind.playMachineVsHumanAllCombinations(ComputationUnit.ALGO_Q, 0.5, true, false);
-			
-			System.out.println("\nrun number: " + i + "  countWarningsDuplicateMoves: " + (GlobalSge.countWarningsDuplicateMoves - cdw));
-			cdw = GlobalSge.countWarningsDuplicateMoves;
 			
 			INDArray op1 = computationUnit.feedForward(1, inputVector1);
 			INDArray op2 = computationUnit.feedForward(1, inputVector2);
@@ -285,14 +281,20 @@ public class AlgoQTest {
 
 			if(op1_condition && op2_condition && op3_condition && op4_condition && i>100 && (winrate2 >= 0.25) && (winrate3 >= 0.4375)) break;
 			
+			
+			int cdw = GlobalSge.countWarningsDuplicateMoves;
 			if(i%100 == 0) {
-				ResultAllGames result = masterMind.playMachineVsHumanAllCombinations(ComputationUnit.ALGO_NN, 0.0, false, false);
+				ResultAllGames result = masterMind.playMachineVsHumanAllCombinations(ComputationUnit.ALGO_NN_WITH_DUPLICATES, 0.0, false, false);
 				winrate = (double)result.gamesWon / (double)result.gamesInTotal;
 
 				winrate1 = (double)result.gamesWonInOneMove    / (double)result.gamesInTotal;
 				winrate2 = (double)result.gamesWonInTwoMoves   / (double)result.gamesInTotal;
 				winrate3 = (double)result.gamesWonInThreeMoves / (double)result.gamesInTotal;
-			}			
+			}
+			
+			System.out.println("run number: " + i + "  countWarningsDuplicateMoves: " + (GlobalSge.countWarningsDuplicateMoves -cdw));
+			System.out.println();
+			
 		}		
 
 		assertTrue(op1_condition && op2_condition && op3_condition && op4_condition && (winrate >= 0.25) && (winrate3 >= 0.4375));

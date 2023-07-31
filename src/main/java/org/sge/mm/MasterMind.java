@@ -56,6 +56,10 @@ public class MasterMind {
 			return computationUnit.getGuessAlgoQ(board.getListOfMoves(), moveNumber, explorationRate, verbose);
 		}
 		
+		if(algo == ComputationUnit.ALGO_NN_WITH_DUPLICATES) { 
+			return computationUnit.getGuessAlgoNNWithDuplicates(board.getListOfMoves(), moveNumber, verbose);
+		}
+		
 		return computationUnit.getGuessAlgoNN(board.getListOfMoves(), moveNumber, verbose);
 	}
 	

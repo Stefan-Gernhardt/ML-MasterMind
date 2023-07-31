@@ -25,6 +25,7 @@ import org.sge.mm.Move;
 import org.sge.mm.Rating;
 import org.sge.mm.ResultAllGames;
 import org.sge.mm.ResultOneGame;
+import java.sql.Timestamp;
 
 public class AlgoQTest {
 
@@ -202,7 +203,8 @@ public class AlgoQTest {
 		MasterMind masterMind = new MasterMind(4, 2, ActivationFunction.SIGMOID, ComputationUnit.SET_RANDOMVALUES_FOR_WEIGHTS_SET_BY_NN, 0, 0);
 
 		ComputationUnit computationUnit = masterMind.getComputationUnit();
-
+		computationUnit.loadLayer1();
+		computationUnit.setLayer1InReadModus();
 		
 		INDArray inputVector1 = computationUnit.computeInputVector("01", 0, 0); // 22, 23, 32, 33
 		INDArray inputVector2 = computationUnit.computeInputVector("01", 0, 1); // 00, 02, 03, 11, 21, 31     
@@ -255,14 +257,14 @@ public class AlgoQTest {
 		double winrate3 = 0.0;
 		
 		for(int i=0; i<100000; i++) { 
-			masterMind.playMachineVsHumanAllCombinations(ComputationUnit.ALGO_Q, 0.5, true, false);
+			masterMind.playMachineVsHumanAllCombinations(ComputationUnit.ALGO_Q, 1.0, true, false);
 			
 			INDArray op1 = computationUnit.feedForward(1, inputVector1);
 			INDArray op2 = computationUnit.feedForward(1, inputVector2);
 			INDArray op3 = computationUnit.feedForward(1, inputVector3);
 			INDArray op4 = computationUnit.feedForward(1, inputVector4);
 			
-			System.out.println(op1 + "  " + computationUnit.getWinnerCodeFromOutputVectorMaxValueMethod(op1)  + " " + op1_sum + "  winrate: " + winrate);
+			System.out.println(op1 + "  " + computationUnit.getWinnerCodeFromOutputVectorMaxValueMethod(op1)  + " " + op1_sum + "  winrate: "  + winrate);
 			System.out.println(op2 + "  " + computationUnit.getWinnerCodeFromOutputVectorMaxValueMethod(op2)  + " " + op2_sum + "  winrate1: " + winrate1);
 			System.out.println(op3 + "  " + computationUnit.getWinnerCodeFromOutputVectorMaxValueMethod(op3)  + " " + op3_sum + "  winrate2: " + winrate2);
 			System.out.println(op4 + "  " + computationUnit.getWinnerCodeFromOutputVectorMaxValueMethod(op4)  + " " + op4_sum + "  winrate3: " + winrate3);
@@ -298,6 +300,9 @@ public class AlgoQTest {
 		}		
 
 		assertTrue(op1_condition && op2_condition && op3_condition && op4_condition && (winrate >= 0.25) && (winrate3 >= 0.4375));
+		
+		
+		computationUnit.saveLayer1();
 		
 		assertTrue(resultCodes1.contains(computationUnit.getWinnerCodeFromOutputVectorMaxValueMethod(computationUnit.feedForward(1, inputVector1))));
 		assertTrue(resultCodes2.contains(computationUnit.getWinnerCodeFromOutputVectorMaxValueMethod(computationUnit.feedForward(1, inputVector2))));
@@ -410,7 +415,7 @@ public class AlgoQTest {
 		INDArray inputVector = computationUnit.computeInputVector("01", 0, 0);
 		System.out.println(inputVector);
 		// [[         0,    1.0000,         0,         0,         0,         0,         0,         0,         0,         0,         0,         0,         0,         0,         0,         0,         0,         0,         0,         0]]
-		for(int i=0; i<10; i++) computationUnit.getNn().fit(inputVector, computationUnit.feedForward(1, inputVector));
+		for(int i=0; i<10; i++) computationUnit.getNN().fit(inputVector, computationUnit.feedForward(1, inputVector));
 		
 
     	INDArray outputVector = computationUnit.feedForward(1, inputVector);	
@@ -449,7 +454,7 @@ public class AlgoQTest {
 		INDArray inputVector = computationUnit.computeInputVector("01", 0, 0);
 		System.out.println(inputVector);
 		// [[         0,    1.0000,         0,         0,         0,         0,         0,         0,         0,         0,         0,         0,         0,         0,         0,         0,         0,         0,         0,         0]]
-		for(int i=0; i<10; i++) computationUnit.getNn().fit(inputVector, computationUnit.feedForward(1, inputVector));
+		for(int i=0; i<10; i++) computationUnit.getNN().fit(inputVector, computationUnit.feedForward(1, inputVector));
 		
 
     	INDArray outputVector = computationUnit.feedForward(1, inputVector);	

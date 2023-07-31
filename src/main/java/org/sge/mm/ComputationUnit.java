@@ -1,5 +1,8 @@
 package org.sge.mm;
 
+import java.io.IOException;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -18,8 +21,12 @@ import org.nd4j.linalg.learning.config.Nadam;
 import org.nd4j.linalg.lossfunctions.LossFunctions;
 import org.nd4j.linalg.lossfunctions.LossFunctions.LossFunction;
 import org.sge.math.MathSge;
+import org.deeplearning4j.util.ModelSerializer;
+
 
 public class ComputationUnit {
+	public static final String FileNameLayer1_4_2 = "Layer1-4-2";
+	
 	public final static int RNG_SEED= 4711;
 	public final static double LEARNING_RATE = 0.001; // 0.0015
 
@@ -49,6 +56,8 @@ public class ComputationUnit {
 	boolean firstMoveFixed = false;
 	String firstMoveFixedCode  = "";
 
+	private boolean layer1InReadModus = false;
+	
 	
 	private MultiLayerNetwork nn = null;
 	private MultiLayerNetwork nn2 = null;
@@ -57,9 +66,6 @@ public class ComputationUnit {
 		return nn;
 	}
 
-	public MultiLayerNetwork getNn() {
-		return getNN();
-	}
 	public void setNN(MultiLayerNetwork mln) {
 		nn = mln;
 	}
@@ -116,14 +122,14 @@ public class ComputationUnit {
                 .layer(new DenseLayer.Builder() //create the input and hidden layer
                         .nIn(countInputNeurons)
                         .activation(activation)
-                        .nOut(countInputNeurons+countHiddenLayerNeurons)
+                        .nOut(countInputNeurons)
                         .build())
                 
                 /*
                 .layer(new DenseLayer.Builder() //create hidden layer 2
-                        .nIn(countInputNeurons+countHiddenLayerNeurons)
+                        .nIn(countInputNeurons)
                         .activation(activation)
-                        .nOut(countInputNeurons+countHiddenLayerNeurons)
+                        .nOut(countInputNeurons)
                         .build())
                 */
                 .layer(new OutputLayer.Builder(LossFunction.NEGATIVELOGLIKELIHOOD) //create output layer
@@ -139,7 +145,9 @@ public class ComputationUnit {
 
 
 	private void createNetFirstLayerOutputColorCoded() {
-		Activation activation = Activation.SIGMOID;
+		// Activation activation = Activation.SIGMOID;
+		Activation activation = Activation.RELU;
+
 		
         MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder()
                 // .seed(RNG_SEED) //include a random seed for reproducibility
@@ -156,19 +164,20 @@ public class ComputationUnit {
                         .activation(activation)
                         .nOut(countInputNeurons*4)
                         .build())
+
                 
                 .layer(new DenseLayer.Builder() //create hidden layer 2
                         .nIn(countInputNeurons*4)
                         .activation(activation)
                         .nOut(countInputNeurons*4)
                         .build())
-                
-                .layer(new OutputLayer.Builder(LossFunction.NEGATIVELOGLIKELIHOOD) //create output layer
-                        .activation(Activation.SOFTMAX)
+                .layer(new OutputLayer.Builder() //create output layer
+                        .activation(activation)
                         .nOut(countOutputNeurons)
-                        .build())
+                        .lossFunction(LossFunctions.LossFunction.MSE) 
+                       .build())
                 .build(); 	
-    	
+            
         nn = new MultiLayerNetwork(conf);
         nn.init();
 	}
@@ -176,9 +185,8 @@ public class ComputationUnit {
 
 
 	private void createNetSecondLayer(int layerCountInputNeurons) {
-		Activation activation = Activation.SIGMOID;
+		Activation activation = Activation.RELU;
 		
-		int countAdditionalNeurons = layerCountInputNeurons*4; //24
 		
         MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder()
                 .seed((int)(Math.random() * 1000)) //include a random seed for reproducibility
@@ -190,21 +198,14 @@ public class ComputationUnit {
                 .layer(new DenseLayer.Builder() //create the input and hidden layer
                         .nIn(layerCountInputNeurons)
                         .activation(activation)
-                        .nOut(layerCountInputNeurons+countAdditionalNeurons)
+                        .nOut(layerCountInputNeurons)
                         .build())
-                /*
-                .layer(new DenseLayer.Builder() //create hidden layer
-                        .nIn(layerCountInputNeurons+countAdditionalNeurons)
-                        .activation(activation)
-                        .nOut(layerCountInputNeurons+countAdditionalNeurons)
-                        .build())
-                        */
-                .layer(new OutputLayer.Builder() //create output layer
-                        .activation(activation)
+
+                .layer(new OutputLayer.Builder(LossFunction.NEGATIVELOGLIKELIHOOD) //create output layer
+                        .activation(Activation.SOFTMAX)
                         .nOut(countOutputNeurons)
-                        .lossFunction(LossFunctions.LossFunction.MSE) 
-                       .build())
-                .build(); 	
+                        .build())
+                .build();                 
     	
         nn2 = new MultiLayerNetwork(conf);
         nn2.init();
@@ -703,6 +704,10 @@ public class ComputationUnit {
 	
 	
 	public Guess getGuessAlgoQ(List<Move> listOfAlreadyPlayedMoves, int moveNumber, double explorationRate, boolean verbose) {
+		if(layer1InReadModus) {
+			if(moveNumber == 1) return getGuessAlgoNNWithDuplicates(listOfAlreadyPlayedMoves, moveNumber, verbose); 
+		}
+		
 		if(explorationRate > Math.random()) {
 			return getGuessRandom(listOfAlreadyPlayedMoves, moveNumber, verbose);
 		}
@@ -1072,7 +1077,7 @@ public class ComputationUnit {
 
 	
 	public final double epsilon = 0.001;
-	
+
 	public void trainAlgoQ_QFormular(Board board, boolean verbose) {
 	// public void trainAlgoQ(Board board, boolean verbose) {
 		// pseudo code (python)
@@ -1178,6 +1183,10 @@ public class ComputationUnit {
 		if(board.getListOfMoves().size() < 2) return;
 		
     	if(!board.codeFound()) return;
+    	
+    	if(layer1InReadModus) {
+    		if(moveNumber == 1) return; 
+    	}
 		
 		if(verbose) System.out.println("------------------------------------------------------------------------------------");
 		if(verbose) System.out.println("trainAlgoQ");
@@ -1405,4 +1414,29 @@ public class ComputationUnit {
 		return countDigits;
 	}
 
+	
+	public void saveLayer1() {
+		try {
+			SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");			
+			String name = FileNameLayer1_4_2 + "_" + sdf1.format(new Timestamp(System.currentTimeMillis()));
+			ModelSerializer.writeModel(this.getNN(), name, true);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	
+	public void loadLayer1() {
+		try {
+			nn = ModelSerializer.restoreMultiLayerNetwork(FileNameLayer1_4_2);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void setLayer1InReadModus() {
+		layer1InReadModus = true;
+	}
+
+	
 }

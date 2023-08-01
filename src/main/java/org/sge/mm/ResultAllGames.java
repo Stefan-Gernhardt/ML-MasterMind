@@ -12,11 +12,14 @@ public class ResultAllGames {
 	public int gamesWonInOneMove        = 0;
 	public int gamesWonInTwoMoves       = 0;
 	public int gamesWonInThreeMoves     = 0;
+	public int gamesWonInFourMoves      = 0;
+	public int gamesWonInFiveMoves      = 0;
+	
 
 	public void print() {
 		System.out.println();		
 		System.out.println("gamesInTotal:  " + gamesInTotal);
-		System.out.println("gamesWon:      " + gamesWon + "  gamesWonInOneMove: " + gamesWonInOneMove + "  gamesWonInTwoMoves: " + gamesWonInTwoMoves + "  gamesWonInThreeMoves: " + gamesWonInThreeMoves);
+		System.out.println("gamesWon:      " + gamesWon + "  gamesWonInOneMove: " + gamesWonInOneMove + "  gamesWonInTwoMoves: " + gamesWonInTwoMoves + "  gamesWonInThreeMoves: " + gamesWonInThreeMoves + "  gamesWonInFourMoves: " + gamesWonInFourMoves + "  gamesWonInFiveMoves: " + gamesWonInFiveMoves);
 		System.out.println("gamesLost:     " + gamesLost);
 		System.out.println("win rate:      " + (1.0*gamesWon) / (1.0*gamesInTotal));
 		System.out.println("sum moves:     " + sumMoves);
@@ -29,13 +32,15 @@ public class ResultAllGames {
 
 	public ResultAllGames add(ResultAllGames result) {
 		this.gamesInTotal = this.gamesInTotal + result.gamesInTotal; 
-		this.gamesWon     = this.gamesWon + result.gamesWon; 
-		this.gamesLost    = this.gamesLost + result.gamesLost; 
-		this.sumMoves     = this.sumMoves + result.sumMoves; 
+		this.gamesWon     = this.gamesWon     + result.gamesWon; 
+		this.gamesLost    = this.gamesLost    + result.gamesLost; 
+		this.sumMoves     = this.sumMoves     + result.sumMoves; 
 
 		this.gamesWonInOneMove    = this.gamesWonInOneMove    + result.gamesWonInOneMove;
 		this.gamesWonInTwoMoves   = this.gamesWonInTwoMoves   + result.gamesWonInTwoMoves;
 		this.gamesWonInThreeMoves = this.gamesWonInThreeMoves + result.gamesWonInThreeMoves;
+		this.gamesWonInFourMoves  = this.gamesWonInFourMoves  + result.gamesWonInFourMoves;
+		this.gamesWonInFiveMoves  = this.gamesWonInFiveMoves  + result.gamesWonInFiveMoves;
 		
 		return this;
 	}

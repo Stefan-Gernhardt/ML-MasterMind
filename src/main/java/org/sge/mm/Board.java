@@ -13,7 +13,7 @@ public class Board {
 	private static int countDigits=0;
 
 	private int turnNumber = 0;
-	public static final int MAX_COUNT_GUESSES = 3;
+	public static final int MAX_COUNT_GUESSES = 5-3;
 	
 	public int getCountColors() {
 		return countColors;

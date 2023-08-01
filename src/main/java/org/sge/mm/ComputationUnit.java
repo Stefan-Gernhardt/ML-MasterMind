@@ -25,8 +25,10 @@ import org.deeplearning4j.util.ModelSerializer;
 
 
 public class ComputationUnit {
-	public static final String FileNameLayer1_4_2 = "Layer1-4-2";
-	public static final String FileNameLayer2_4_2 = "Layer2-4-2";
+	public static final String FileNameLayer1_ = "Layer1-";
+	public static final String FileNameLayer2_ = "Layer2-";
+	public static final String FileNameLayer3_ = "Layer3-";
+	public static final String FileNameLayer4_ = "Layer4-";
 	
 	public final static int RNG_SEED= 4711;
 	public final static double LEARNING_RATE = 0.001; // 0.0015
@@ -55,14 +57,18 @@ public class ComputationUnit {
 	private int countInputNeuronsPerGuess = 0;
 	
 	boolean firstMoveFixed = false;
-	String firstMoveFixedCode  = "";
+	String  firstMoveFixedCode  = "";
 
 	private boolean layer1InReadModus = false;
 	private boolean layer2InReadModus = false;
+	private boolean layer3InReadModus = false;
+	private boolean layer4InReadModus = false;
 	
 	
 	private MultiLayerNetwork nn = null;
 	private MultiLayerNetwork nn2 = null;
+	private MultiLayerNetwork nn3 = null;
+	private MultiLayerNetwork nn4 = null;
 	
 	public MultiLayerNetwork getNN() {
 		return nn;
@@ -105,6 +111,8 @@ public class ComputationUnit {
 	private void createNet() {
 		createNetFirstLayer();
 		createNetSecondLayer(countInputNeurons*2);
+		createNetThirdLayer(countInputNeurons*3);
+		createNetForthLayer(countInputNeurons*4);
 	}
 
 	
@@ -185,7 +193,6 @@ public class ComputationUnit {
 	}
 
 
-
 	private void createNetSecondLayer(int layerCountInputNeurons) {
 		Activation activation = Activation.RELU;
 		
@@ -213,6 +220,61 @@ public class ComputationUnit {
         nn2.init();
 	}
 
+
+	private void createNetThirdLayer(int layerCountInputNeurons) {
+		Activation activation = Activation.RELU;
+		
+		
+        MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder()
+                .seed((int)(Math.random() * 1000)) //include a random seed for reproducibility
+                .activation(activation)
+                .weightInit(WeightInit.XAVIER)
+                .updater(new Nadam())
+                .l2(LEARNING_RATE * 0.001)    // regularize learning model // * 0.005
+                .list()
+                .layer(new DenseLayer.Builder() //create the input and hidden layer
+                        .nIn(layerCountInputNeurons)
+                        .activation(activation)
+                        .nOut(layerCountInputNeurons)
+                        .build())
+
+                .layer(new OutputLayer.Builder(LossFunction.NEGATIVELOGLIKELIHOOD) //create output layer
+                        .activation(Activation.SOFTMAX)
+                        .nOut(countOutputNeurons)
+                        .build())
+                .build();                 
+    	
+        nn3 = new MultiLayerNetwork(conf);
+        nn3.init();
+	}
+
+
+	private void createNetForthLayer(int layerCountInputNeurons) {
+		Activation activation = Activation.RELU;
+		
+		
+        MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder()
+                .seed((int)(Math.random() * 1000)) //include a random seed for reproducibility
+                .activation(activation)
+                .weightInit(WeightInit.XAVIER)
+                .updater(new Nadam())
+                .l2(LEARNING_RATE * 0.001)    // regularize learning model // * 0.005
+                .list()
+                .layer(new DenseLayer.Builder() //create the input and hidden layer
+                        .nIn(layerCountInputNeurons)
+                        .activation(activation)
+                        .nOut(layerCountInputNeurons)
+                        .build())
+
+                .layer(new OutputLayer.Builder(LossFunction.NEGATIVELOGLIKELIHOOD) //create output layer
+                        .activation(Activation.SOFTMAX)
+                        .nOut(countOutputNeurons)
+                        .build())
+                .build();                 
+    	
+        nn4 = new MultiLayerNetwork(conf);
+        nn4.init();
+	}
 
 
 	private void createNetSecondLayerColorCoded(int layerCountInputNeurons) {
@@ -665,6 +727,8 @@ public class ComputationUnit {
 	public INDArray feedForward(int moveNumber, INDArray inputVector) {
 		if(moveNumber == 1 ) return nn.feedForward(inputVector, false).get(nn.getnLayers());
 		if(moveNumber == 2 ) return nn2.feedForward(inputVector, false).get(nn2.getnLayers());
+		if(moveNumber == 3 ) return nn3.feedForward(inputVector, false).get(nn3.getnLayers());
+		if(moveNumber == 4 ) return nn4.feedForward(inputVector, false).get(nn4.getnLayers());
 		
 		return null;
 	}
@@ -711,6 +775,12 @@ public class ComputationUnit {
 		}
 		if(layer2InReadModus) {
 			if(moveNumber == 2) return getGuessAlgoNNWithDuplicates(listOfAlreadyPlayedMoves, moveNumber, verbose); 
+		}
+		if(layer3InReadModus) {
+			if(moveNumber == 3) return getGuessAlgoNNWithDuplicates(listOfAlreadyPlayedMoves, moveNumber, verbose); 
+		}
+		if(layer4InReadModus) {
+			if(moveNumber == 4) return getGuessAlgoNNWithDuplicates(listOfAlreadyPlayedMoves, moveNumber, verbose); 
 		}
 		
 		if(explorationRate > Math.random()) {
@@ -1231,7 +1301,14 @@ public class ComputationUnit {
 			
         	if(moveNumber == 2) { 
     			nn2.fit(guess.inputVector, op);		
-
+        	}
+			
+        	if(moveNumber == 3) { 
+    			nn3.fit(guess.inputVector, op);		
+        	}
+			
+        	if(moveNumber == 4) { 
+    			nn4.fit(guess.inputVector, op);		
         	}
     	}
     	else {
@@ -1249,6 +1326,14 @@ public class ComputationUnit {
         	
         	if(moveNumber == 2) { 
     			nn2.fit(guess.inputVector, op);
+        	}
+        	
+        	if(moveNumber == 3) { 
+    			nn3.fit(guess.inputVector, op);
+        	}
+        	
+        	if(moveNumber == 4) { 
+    			nn4.fit(guess.inputVector, op);
         	}
     	}
         
@@ -1402,7 +1487,7 @@ public class ComputationUnit {
 	public void saveLayer1() {
 		try {
 			SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");			
-			String name = FileNameLayer1_4_2 + "_" + sdf1.format(new Timestamp(System.currentTimeMillis()));
+			String name = FileNameLayer1_ + this.countColors + "_" + this.countDigits + "_" + sdf1.format(new Timestamp(System.currentTimeMillis()));
 			ModelSerializer.writeModel(this.nn, name, true);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -1413,8 +1498,30 @@ public class ComputationUnit {
 	public void saveLayer2() {
 		try {
 			SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");			
-			String name = FileNameLayer2_4_2 + "_" + sdf1.format(new Timestamp(System.currentTimeMillis()));
+			String name = FileNameLayer2_ + "_" + sdf1.format(new Timestamp(System.currentTimeMillis()));
 			ModelSerializer.writeModel(this.nn2, name, true);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	
+	public void saveLayer3() {
+		try {
+			SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");			
+			String name = FileNameLayer3_ + "_" + sdf1.format(new Timestamp(System.currentTimeMillis()));
+			ModelSerializer.writeModel(this.nn3, name, true);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	
+	public void saveLayer4() {
+		try {
+			SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");			
+			String name = FileNameLayer4_ + "_" + sdf1.format(new Timestamp(System.currentTimeMillis()));
+			ModelSerializer.writeModel(this.nn4, name, true);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -1423,7 +1530,7 @@ public class ComputationUnit {
 	
 	public void loadLayer1() {
 		try {
-			nn = ModelSerializer.restoreMultiLayerNetwork(FileNameLayer1_4_2);
+			nn = ModelSerializer.restoreMultiLayerNetwork(FileNameLayer1_);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -1432,7 +1539,25 @@ public class ComputationUnit {
 	
 	public void loadLayer2() {
 		try {
-			nn2 = ModelSerializer.restoreMultiLayerNetwork(FileNameLayer2_4_2);
+			nn2 = ModelSerializer.restoreMultiLayerNetwork(FileNameLayer2_);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	
+	public void loadLayer3() {
+		try {
+			nn3 = ModelSerializer.restoreMultiLayerNetwork(FileNameLayer3_);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	
+	public void loadLayer4() {
+		try {
+			nn4 = ModelSerializer.restoreMultiLayerNetwork(FileNameLayer4_);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -1446,6 +1571,16 @@ public class ComputationUnit {
 	
 	public void setLayer2InReadModus() {
 		layer2InReadModus = true;
+	}
+
+	
+	public void setLayer3InReadModus() {
+		layer3InReadModus = true;
+	}
+
+	
+	public void setLayer4InReadModus() {
+		layer4InReadModus = true;
 	}
 
 	

@@ -1182,7 +1182,7 @@ public class ComputationUnit {
 		if(board.getListOfMoves().isEmpty()) return;
 		if(board.getListOfMoves().size() < 2) return;
 		
-    	if(!board.codeFound()) return;
+    	// if(!board.codeFound()) return;
     	
     	if(layer1InReadModus) {
     		if(moveNumber == 1) return; 
@@ -1264,17 +1264,21 @@ public class ComputationUnit {
         	}
     	}
     	else {
-			if(verbose) System.out.println("learning vector:        " + "no training");
-
 			// Method 1
 			// op = distributePositive(guess.outputVector, guess.code, learningRate*score*0.5);
 			// if(verbose) System.out.println("learning vector:        " + op);
         	// nn.fit(ip, op);		
 
         	// Method 2
-        	// op = distributeNegative(guess.outputVector, guess.index, learningRate);
-			// if(verbose) System.out.println("learning vector:        " + op);
-        	// nn.fit(ip, op);		
+        	op = distributeNegative(guess.outputVector, guess.code, learningRate);
+			if(verbose) System.out.println("learning vector:        " + op);
+        	if(moveNumber == 1) { 
+    			nn.fit(guess.inputVector, op);
+        	}
+        	
+        	if(moveNumber == 2) { 
+    			nn2.fit(guess.inputVector, op);
+        	}
     	}
         
         if(verbose) {
@@ -1335,16 +1339,25 @@ public class ComputationUnit {
 	}
 	
 
-	public INDArray distributeNegative(INDArray oldOP, int index, double learningRate) {
+	public INDArray distributeNegative(INDArray oldOP, String code, double learningRate) {
+		int index = MathSge.convertStringTo(countColors, code);
 		
 		INDArray newOP = oldOP.dup();
-
 		double value = oldOP.getDouble(0, index);
 		int vectorLength = oldOP.columns();
 		
+		double sum = 0.0;
 		for(int i=0; i<vectorLength; i++) {
+			if(i != index) sum = sum + oldOP.getDouble(0, i);
+		}
+		
+		
+		for(int i=0; i<vectorLength; i++) {
+			
 			double oldV = oldOP.getDouble(0, i);
-			double newV = oldV + value / (vectorLength - 1);
+			double weight = oldV / sum; 
+
+			double newV = oldV + value * weight;
 			newOP.put(0, i, newV); 
 		}
 		newOP.put(0, index, 0.0); 

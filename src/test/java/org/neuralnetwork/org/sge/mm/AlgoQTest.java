@@ -199,120 +199,6 @@ public class AlgoQTest {
 	
 
 	@Test
-	public void test40_CheckOutputVectorAll() {
-		MasterMind masterMind = new MasterMind(4, 2, ActivationFunction.SIGMOID, ComputationUnit.SET_RANDOMVALUES_FOR_WEIGHTS_SET_BY_NN, 0, 0);
-
-		ComputationUnit computationUnit = masterMind.getComputationUnit();
-		computationUnit.loadLayer1();
-		computationUnit.setLayer1InReadModus();
-		
-		INDArray inputVector1 = computationUnit.computeInputVector("01", 0, 0); // 22, 23, 32, 33
-		INDArray inputVector2 = computationUnit.computeInputVector("01", 0, 1); // 00, 02, 03, 11, 21, 31     
-		INDArray inputVector3 = computationUnit.computeInputVector("01", 1, 0);
-		INDArray inputVector4 = computationUnit.computeInputVector("01", 2, 0);
-
-		System.out.println("inputVector1: " + inputVector1);
-		System.out.println("inputVector2: " + inputVector2);
-		System.out.println("inputVector3: " + inputVector3);
-		System.out.println("inputVector4: " + inputVector4);
-		
-		// [[         0,    1.0000,         0,         0,         0,         0,         0,         0,         0,         0,         0,         0,         0,         0,         0,         0,         0,         0,         0,         0]]
-		// for(int i=0; i<10; i++) computationUnit.getNn().fit(inputVector, computationUnit.feedForward(1, inputVector));
-		
-
-    	INDArray outputVector = computationUnit.feedForward(1, inputVector1);	
-		System.out.println(outputVector);
-		
-		//          00      01         02         03         04         05         06         07         08         09         10         11         12         13         14         15
-		//          00      01         02         03         10         11         12         13         20         21         22         23         30         31         32         33
-		
-		// ip1      0.0     0.0        0.0        0.0        0.0        0.0        0.0        0.0        0.0        0.0        0.25       0.25       0.0        0.0        0.25       0.25   
-		// ip2      y       n          y          y          n          y          n          n          n          y          n          n          n          y          n          n
-		// ip3      n       n          n          n          n          n          y          y          y          n          n          n          y          n          n          n
-		// ip4      n       n          n          n          y          n          n          n          n          n          n          n          n          n          n          n
-
-		// possible solutions
-		ArrayList<String> resultCodes1 = new ArrayList<String>(Arrays.asList("22", "23", "32", "33"));
-		ArrayList<String> resultCodes2 = new ArrayList<String>(Arrays.asList("00", "02", "03", "11", "21", "31"));
-		ArrayList<String> resultCodes3 = new ArrayList<String>(Arrays.asList("12", "13", "20", "30"));
-		ArrayList<String> resultCodes4 = new ArrayList<String>(Arrays.asList("10"));
-
-		
-		
-		double op1_sum = 0;
-		boolean op1_condition = false; 
-		
-		double op2_sum = 0;
-		boolean op2_condition = false; 
-		
-		double op3_sum = 0;
-		boolean op3_condition = false; 
-		
-		double op4_sum = 0;
-		boolean op4_condition = false; 
-		
-		double winrate = 0.0;
-		double winrate1 = 0.0;
-		double winrate2 = 0.0;
-		double winrate3 = 0.0;
-		
-		for(int i=0; i<100000; i++) { 
-			masterMind.playMachineVsHumanAllCombinations(ComputationUnit.ALGO_Q, 1.0, true, false);
-			
-			INDArray op1 = computationUnit.feedForward(1, inputVector1);
-			INDArray op2 = computationUnit.feedForward(1, inputVector2);
-			INDArray op3 = computationUnit.feedForward(1, inputVector3);
-			INDArray op4 = computationUnit.feedForward(1, inputVector4);
-			
-			System.out.println(op1 + "  " + computationUnit.getWinnerCodeFromOutputVectorMaxValueMethod(op1)  + " " + op1_sum + "  winrate: "  + winrate);
-			System.out.println(op2 + "  " + computationUnit.getWinnerCodeFromOutputVectorMaxValueMethod(op2)  + " " + op2_sum + "  winrate1: " + winrate1);
-			System.out.println(op3 + "  " + computationUnit.getWinnerCodeFromOutputVectorMaxValueMethod(op3)  + " " + op3_sum + "  winrate2: " + winrate2);
-			System.out.println(op4 + "  " + computationUnit.getWinnerCodeFromOutputVectorMaxValueMethod(op4)  + " " + op4_sum + "  winrate3: " + winrate3);
-			
-			op1_sum = op1.getDouble(0, 10) + op1.getDouble(0, 11) + op1.getDouble(0, 14) + op1.getDouble(0, 15);
-			op1_condition = op1_sum > 0.9;
-
-			op2_sum = op2.getDouble(0, 0) + op2.getDouble(0, 2) + op2.getDouble(0, 3) + op2.getDouble(0, 5) + op2.getDouble(0, 9) + op2.getDouble(0, 13);
-			op2_condition = op2_sum > 0.9;
-
-			op3_sum = op3.getDouble(0, 6) + op3.getDouble(0, 7) + op3.getDouble(0, 8) + op3.getDouble(0, 12); 
-			op3_condition = op2_sum > 0.9;
-
-			op4_sum = op4.getDouble(0, 4); 
-			op4_condition = op2_sum > 0.9;
-
-			if(op1_condition && op2_condition && op3_condition && op4_condition && i>100 && (winrate2 >= 0.25) && (winrate3 >= 0.4375)) break;
-			
-			
-			int cdw = GlobalSge.countWarningsDuplicateMoves;
-			if(i%100 == 0) {
-				ResultAllGames result = masterMind.playMachineVsHumanAllCombinations(ComputationUnit.ALGO_NN_WITH_DUPLICATES, 0.0, false, false);
-				winrate = (double)result.gamesWon / (double)result.gamesInTotal;
-
-				winrate1 = (double)result.gamesWonInOneMove    / (double)result.gamesInTotal;
-				winrate2 = (double)result.gamesWonInTwoMoves   / (double)result.gamesInTotal;
-				winrate3 = (double)result.gamesWonInThreeMoves / (double)result.gamesInTotal;
-			}
-			
-			System.out.println("run number: " + i + "  countWarningsDuplicateMoves: " + (GlobalSge.countWarningsDuplicateMoves -cdw));
-			System.out.println();
-			
-		}		
-
-		assertTrue(op1_condition && op2_condition && op3_condition && op4_condition && (winrate >= 0.25) && (winrate3 >= 0.4375));
-		
-		
-		computationUnit.saveLayer1();
-		
-		assertTrue(resultCodes1.contains(computationUnit.getWinnerCodeFromOutputVectorMaxValueMethod(computationUnit.feedForward(1, inputVector1))));
-		assertTrue(resultCodes2.contains(computationUnit.getWinnerCodeFromOutputVectorMaxValueMethod(computationUnit.feedForward(1, inputVector2))));
-		assertTrue(resultCodes3.contains(computationUnit.getWinnerCodeFromOutputVectorMaxValueMethod(computationUnit.feedForward(1, inputVector3))));
-		assertTrue(resultCodes4.contains(computationUnit.getWinnerCodeFromOutputVectorMaxValueMethod(computationUnit.feedForward(1, inputVector4))));
-	}	
-	
-
-	//! hier geht es weiter
-	@Test
 	public void test40_CheckOutputVector2() {
 		MasterMind masterMind = new MasterMind(4, 2, ActivationFunction.SIGMOID, ComputationUnit.SET_RANDOMVALUES_FOR_WEIGHTS_SET_BY_NN, 0, 0);
 
@@ -929,6 +815,125 @@ public class AlgoQTest {
 		}
 		
 		// assertTrue(winrate >= 0.30);		
+	}
+	
+	
+	@Test
+	public void test40_CheckOutputVectorAll() {
+		MasterMind masterMind = new MasterMind(4, 2, ActivationFunction.SIGMOID, ComputationUnit.SET_RANDOMVALUES_FOR_WEIGHTS_SET_BY_NN, 0, 0);
+
+		ComputationUnit computationUnit = masterMind.getComputationUnit();
+		// computationUnit.loadLayer1();
+		// computationUnit.setLayer1InReadModus();
+		
+		INDArray inputVector1 = computationUnit.computeInputVector("01", 0, 0); // 22, 23, 32, 33
+		INDArray inputVector2 = computationUnit.computeInputVector("01", 0, 1); // 00, 02, 03, 11, 21, 31     
+		INDArray inputVector3 = computationUnit.computeInputVector("01", 1, 0);
+		INDArray inputVector4 = computationUnit.computeInputVector("01", 2, 0);
+
+		System.out.println("inputVector1: " + inputVector1);
+		System.out.println("inputVector2: " + inputVector2);
+		System.out.println("inputVector3: " + inputVector3);
+		System.out.println("inputVector4: " + inputVector4);
+		
+		// [[         0,    1.0000,         0,         0,         0,         0,         0,         0,         0,         0,         0,         0,         0,         0,         0,         0,         0,         0,         0,         0]]
+		// for(int i=0; i<10; i++) computationUnit.getNn().fit(inputVector, computationUnit.feedForward(1, inputVector));
+		
+
+    	INDArray outputVector = computationUnit.feedForward(1, inputVector1);	
+		System.out.println(outputVector);
+		
+		//          00      01         02         03         04         05         06         07         08         09         10         11         12         13         14         15
+		//          00      01         02         03         10         11         12         13         20         21         22         23         30         31         32         33
+		
+		// ip1      0.0     0.0        0.0        0.0        0.0        0.0        0.0        0.0        0.0        0.0        0.25       0.25       0.0        0.0        0.25       0.25   
+		// ip2      y       n          y          y          n          y          n          n          n          y          n          n          n          y          n          n
+		// ip3      n       n          n          n          n          n          y          y          y          n          n          n          y          n          n          n
+		// ip4      n       n          n          n          y          n          n          n          n          n          n          n          n          n          n          n
+
+		// possible solutions
+		ArrayList<String> resultCodes1 = new ArrayList<String>(Arrays.asList("22", "23", "32", "33"));
+		ArrayList<String> resultCodes2 = new ArrayList<String>(Arrays.asList("00", "02", "03", "11", "21", "31"));
+		ArrayList<String> resultCodes3 = new ArrayList<String>(Arrays.asList("12", "13", "20", "30"));
+		ArrayList<String> resultCodes4 = new ArrayList<String>(Arrays.asList("10"));
+
+		
+		
+		double op1_sum = 0;
+		boolean op1_condition = false; 
+		
+		double op2_sum = 0;
+		boolean op2_condition = false; 
+		
+		double op3_sum = 0;
+		boolean op3_condition = false; 
+		
+		double op4_sum = 0;
+		boolean op4_condition = false; 
+		
+		double winrate = 0.0;
+		double winrate0 = 0.0;
+		double winrate1 = 0.0;
+		double winrate2 = 0.0;
+		
+		for(int i=0; i<100000; i++) { 
+			
+			if(op1_condition && op2_condition && op3_condition && op4_condition && (winrate >= 0.25)) computationUnit.setLayer1InReadModus();
+
+			masterMind.playMachineVsHumanAllCombinations(ComputationUnit.ALGO_Q, 1.0, true, false);
+			
+			INDArray op1 = computationUnit.feedForward(1, inputVector1);
+			INDArray op2 = computationUnit.feedForward(1, inputVector2);
+			INDArray op3 = computationUnit.feedForward(1, inputVector3);
+			INDArray op4 = computationUnit.feedForward(1, inputVector4);
+			
+			System.out.println(op1 + "  " + computationUnit.getWinnerCodeFromOutputVectorMaxValueMethod(op1)  + " " + op1_sum + "  winrate: "  + winrate);
+			System.out.println(op2 + "  " + computationUnit.getWinnerCodeFromOutputVectorMaxValueMethod(op2)  + " " + op2_sum + "  winrate0: " + winrate0);
+			System.out.println(op3 + "  " + computationUnit.getWinnerCodeFromOutputVectorMaxValueMethod(op3)  + " " + op3_sum + "  winrate1: " + winrate1);
+			System.out.println(op4 + "  " + computationUnit.getWinnerCodeFromOutputVectorMaxValueMethod(op4)  + " " + op4_sum + "  winrate2: " + winrate2);
+			
+			op1_sum = op1.getDouble(0, 10) + op1.getDouble(0, 11) + op1.getDouble(0, 14) + op1.getDouble(0, 15);
+			op1_condition = op1_sum > 0.9;
+
+			op2_sum = op2.getDouble(0, 0) + op2.getDouble(0, 2) + op2.getDouble(0, 3) + op2.getDouble(0, 5) + op2.getDouble(0, 9) + op2.getDouble(0, 13);
+			op2_condition = op2_sum > 0.9;
+
+			op3_sum = op3.getDouble(0, 6) + op3.getDouble(0, 7) + op3.getDouble(0, 8) + op3.getDouble(0, 12); 
+			op3_condition = op2_sum > 0.9;
+
+			op4_sum = op4.getDouble(0, 4); 
+			op4_condition = op2_sum > 0.9;
+
+			if(op1_condition && op2_condition && op3_condition && op4_condition && i>100 && (winrate1 >= 0.25) && (winrate2 >= 0.4375)) break;
+			
+			
+			int cdw = GlobalSge.countWarningsDuplicateMoves;
+			if(i%100 == 0) {
+				ResultAllGames result = masterMind.playMachineVsHumanAllCombinations(ComputationUnit.ALGO_NN_WITH_DUPLICATES, 0.0, false, false);
+				winrate = (double)result.gamesWon / (double)result.gamesInTotal;
+
+				winrate0 = (double)result.gamesWonInOneMove    / (double)result.gamesInTotal;
+				winrate1 = (double)result.gamesWonInTwoMoves   / (double)result.gamesInTotal;
+				winrate2 = (double)result.gamesWonInThreeMoves / (double)result.gamesInTotal;
+			}
+			
+			System.out.println("run number: " + i + "  countWarningsDuplicateMoves: " + (GlobalSge.countWarningsDuplicateMoves - cdw));
+			System.out.println();
+			
+		}		
+
+		assertTrue(op1_condition && op2_condition && op3_condition && op4_condition && (winrate >= 0.25) && (winrate2 >= 0.4375));
+		
+		
+		computationUnit.saveLayer1();
+		
+		assertTrue(resultCodes1.contains(computationUnit.getWinnerCodeFromOutputVectorMaxValueMethod(computationUnit.feedForward(1, inputVector1))));
+		assertTrue(resultCodes2.contains(computationUnit.getWinnerCodeFromOutputVectorMaxValueMethod(computationUnit.feedForward(1, inputVector2))));
+		assertTrue(resultCodes3.contains(computationUnit.getWinnerCodeFromOutputVectorMaxValueMethod(computationUnit.feedForward(1, inputVector3))));
+		assertTrue(resultCodes4.contains(computationUnit.getWinnerCodeFromOutputVectorMaxValueMethod(computationUnit.feedForward(1, inputVector4))));
 	}	
+	
+
+	
 }
 

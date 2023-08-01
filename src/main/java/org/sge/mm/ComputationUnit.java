@@ -26,6 +26,7 @@ import org.deeplearning4j.util.ModelSerializer;
 
 public class ComputationUnit {
 	public static final String FileNameLayer1_4_2 = "Layer1-4-2";
+	public static final String FileNameLayer2_4_2 = "Layer2-4-2";
 	
 	public final static int RNG_SEED= 4711;
 	public final static double LEARNING_RATE = 0.001; // 0.0015
@@ -57,6 +58,7 @@ public class ComputationUnit {
 	String firstMoveFixedCode  = "";
 
 	private boolean layer1InReadModus = false;
+	private boolean layer2InReadModus = false;
 	
 	
 	private MultiLayerNetwork nn = null;
@@ -707,6 +709,9 @@ public class ComputationUnit {
 		if(layer1InReadModus) {
 			if(moveNumber == 1) return getGuessAlgoNNWithDuplicates(listOfAlreadyPlayedMoves, moveNumber, verbose); 
 		}
+		if(layer2InReadModus) {
+			if(moveNumber == 2) return getGuessAlgoNNWithDuplicates(listOfAlreadyPlayedMoves, moveNumber, verbose); 
+		}
 		
 		if(explorationRate > Math.random()) {
 			return getGuessRandom(listOfAlreadyPlayedMoves, moveNumber, verbose);
@@ -1182,10 +1187,11 @@ public class ComputationUnit {
 		if(board.getListOfMoves().isEmpty()) return;
 		if(board.getListOfMoves().size() < 2) return;
 		
-    	// if(!board.codeFound()) return;
-    	
     	if(layer1InReadModus) {
     		if(moveNumber == 1) return; 
+    	}
+    	if(layer2InReadModus) {
+    		if(moveNumber == 2) return; 
     	}
 		
 		if(verbose) System.out.println("------------------------------------------------------------------------------------");
@@ -1226,41 +1232,6 @@ public class ComputationUnit {
         	if(moveNumber == 2) { 
     			nn2.fit(guess.inputVector, op);		
 
-    			// if(board.getCodeToFind().contentEquals("22")) { 
-        		// double[] da = {  1.0000,         0,         0,         0,         0,    1.0000,         0,         0,         0,         0,         0,         0,         0,         0,         0,    1.0000,         0,         0,         0,    1.0000,         0,         0,         0,         0 };
-        		// INDArray inputVector = Nd4j.create(da);
-        		// if(MathSge.compareINDArrayDim1xNwithDimN(guess.inputVector, inputVector, 0.01)) {
-        		
-	    			// System.out.println("input    vector:        " + guess.inputVector);
-	    			// System.out.println("learning vector:        " + op);
-	    			// System.out.println();
-	    			
-	    			//if(board.getCodeToFind().contentEquals("22") || board.getCodeToFind().contentEquals("23") || board.getCodeToFind().contentEquals("32") || board.getCodeToFind().contentEquals("33")) {
-		    			// System.out.println("codeToFind: " + board.getCodeToFind());
-		    			// nn2.fit(guess.inputVector, op);		
-	    			//}
-	    			//else {
-		    		//	System.out.println("codeToFind: " + board.getCodeToFind());
-	    			//}
-        		//}
-        		//else {
-	    			// if(board.getCodeToFind().contentEquals("22") || board.getCodeToFind().contentEquals("23") || board.getCodeToFind().contentEquals("32") || board.getCodeToFind().contentEquals("33")) {
-		    		/*	
-		    		if(board.getCodeToFind().contentEquals("23") ) {
-		    			System.out.println("input    vector:        " + guess.inputVector);
-		    			System.out.println("learning vector:        " + op);
-
-		        		double[] da_b = {  1.0000,         0,         0,         0,         0,    1.0000,         0,         0,         0,         0,         0,         0,         0,         0,         0,    1.0000,         0,         0,         0,    1.0000,         0,         0,         0,         0 };
-		        		INDArray inputVector_b = Nd4j.create(da_b);
-		        		//if(MathSge.compareINDArrayDim1xNwithDimN(guess.inputVector, inputVector_b, 0.01)) {
-		        			nn2.fit(guess.inputVector, op);		
-		        		//}
-		        		//else {
-			    		//	System.out.println();
-		        		//}
-		    		}
-        		}
-				*/
         	}
     	}
     	else {
@@ -1432,7 +1403,18 @@ public class ComputationUnit {
 		try {
 			SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");			
 			String name = FileNameLayer1_4_2 + "_" + sdf1.format(new Timestamp(System.currentTimeMillis()));
-			ModelSerializer.writeModel(this.getNN(), name, true);
+			ModelSerializer.writeModel(this.nn, name, true);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	
+	public void saveLayer2() {
+		try {
+			SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");			
+			String name = FileNameLayer2_4_2 + "_" + sdf1.format(new Timestamp(System.currentTimeMillis()));
+			ModelSerializer.writeModel(this.nn2, name, true);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -1447,8 +1429,23 @@ public class ComputationUnit {
 		}
 	}
 
+	
+	public void loadLayer2() {
+		try {
+			nn2 = ModelSerializer.restoreMultiLayerNetwork(FileNameLayer2_4_2);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	
 	public void setLayer1InReadModus() {
 		layer1InReadModus = true;
+	}
+
+	
+	public void setLayer2InReadModus() {
+		layer2InReadModus = true;
 	}
 
 	

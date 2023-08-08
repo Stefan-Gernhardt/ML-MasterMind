@@ -163,6 +163,7 @@ public class MasterMind {
 			if(gameResult.movesNeeded == 3) resultAllGameCombinations.gamesWonInThreeMoves++;
 			if(gameResult.movesNeeded == 4) resultAllGameCombinations.gamesWonInFourMoves++;
 			if(gameResult.movesNeeded == 5) resultAllGameCombinations.gamesWonInFiveMoves++;
+			if(gameResult.movesNeeded == 6) resultAllGameCombinations.gamesWonInSixMoves++;
 		}
 		
 		double averageCountMoves = sumCountMoves / board.getNumberPossibleCombinations(); 

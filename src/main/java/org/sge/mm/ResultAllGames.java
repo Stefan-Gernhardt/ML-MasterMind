@@ -14,6 +14,7 @@ public class ResultAllGames {
 	public int gamesWonInThreeMoves     = 0;
 	public int gamesWonInFourMoves      = 0;
 	public int gamesWonInFiveMoves      = 0;
+	public int gamesWonInSixMoves       = 0;
 	
 
 	public void print() {
@@ -41,6 +42,7 @@ public class ResultAllGames {
 		this.gamesWonInThreeMoves = this.gamesWonInThreeMoves + result.gamesWonInThreeMoves;
 		this.gamesWonInFourMoves  = this.gamesWonInFourMoves  + result.gamesWonInFourMoves;
 		this.gamesWonInFiveMoves  = this.gamesWonInFiveMoves  + result.gamesWonInFiveMoves;
+		this.gamesWonInSixMoves  = this.gamesWonInFiveMoves  + result.gamesWonInFiveMoves;
 		
 		return this;
 	}

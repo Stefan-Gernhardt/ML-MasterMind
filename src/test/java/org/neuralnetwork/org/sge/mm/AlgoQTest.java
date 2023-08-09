@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.jupiter.api.Test;
@@ -1235,6 +1237,93 @@ public class AlgoQTest {
 	}	
 	
 	
+	
+	@Test
+	public void test80_MM_4_2_WinrateCheckPlus() {
+		MasterMind masterMind = new MasterMind(4, 2, ActivationFunction.SIGMOID, ComputationUnit.SET_RANDOMVALUES_FOR_WEIGHTS_SET_BY_NN, 0, 0);
+
+		// masterMind.getComputationUnit().loadLayer1();
+		// masterMind.getComputationUnit().setLayer1InReadModus();
+		
+		// masterMind.getComputationUnit().loadLayer2();
+		// masterMind.getComputationUnit().setLayer2InReadModus();
+
+		// masterMind.getComputationUnit().loadLayer3();
+		// masterMind.getComputationUnit().setLayer3InReadModus();
+
+		// masterMind.getComputationUnit().loadLayer4();
+		// masterMind.getComputationUnit().setLayer4InReadModus();
+		
+		// masterMind.getComputationUnit().loadLayer5();
+		// masterMind.getComputationUnit().setLayer5InReadModus();
+		
+		
+		double averageMoves = 0.0;
+		double winrate  = 0.0;
+		double winrate0 = 0.0;
+		double winrate1 = 0.0;
+		double winrate2 = 0.0;
+		double winrate3 = 0.0;
+		double winrate4 = 0.0;
+		double winrate5 = 0.0;
+		
+		int dm = 0;
+		
+		ArrayList<String> codeListToGuess = new ArrayList<String>(); 
+		
+		for(int i=0; i<100000; i++) { 
+			// masterMind.playMachineVsHumanAllCombinations(ComputationUnit.ALGO_Q, 1.0, true, false);
+			masterMind.playMachineVsHumanSetOfCombinationMultipleTimes(1, codeListToGuess, ComputationUnit.ALGO_Q, 1.0, true, false);
+			
+			int cdw = GlobalSge.countWarningsDuplicateMoves;
+			if(i%10 == 0) {
+				ResultAllGames result = masterMind.playMachineVsHumanAllCombinations(ComputationUnit.ALGO_NN_WITH_DUPLICATES, 0.0, false, false);
+				codeListToGuess = result.notFoundCodeList;
+
+				winrate = (double)result.gamesWon / (double)result.gamesInTotal;
+
+				averageMoves = result.average;
+				winrate0 = (double)result.gamesWonInOneMove    / (double)result.gamesInTotal;
+				winrate1 = (double)result.gamesWonInTwoMoves   / (double)result.gamesInTotal; 
+				winrate2 = (double)result.gamesWonInThreeMoves / (double)result.gamesInTotal; 
+				winrate3 = (double)result.gamesWonInFourMoves  / (double)result.gamesInTotal;
+				winrate4 = (double)result.gamesWonInFiveMoves  / (double)result.gamesInTotal;
+				winrate5 = (double)result.gamesWonInSixMoves   / (double)result.gamesInTotal;
+				
+				dm = (GlobalSge.countWarningsDuplicateMoves - cdw);
+			}
+
+			System.out.println("  winrate:  " + winrate + "  average moves: " + averageMoves);
+			System.out.println("  winrate0: " + winrate0);
+			System.out.println("  winrate1: " + winrate1);  
+			System.out.println("  winrate2: " + winrate2);  
+			System.out.println("  winrate3: " + winrate3);
+			System.out.println("  winrate4: " + winrate4);
+			System.out.println("  winrate5: " + winrate5);
+			
+			if(winrate >= 1.0) break;
+			
+			if(i%1000 == 999) {
+				masterMind.getComputationUnit().saveLayer5();
+			}
+			
+			System.out.println("run number: " + i + "  countWarningsDuplicateMoves: " + dm);
+			System.out.println();
+		}
+		/*
+		run number: 1759  countWarningsDuplicateMoves: 1
+
+		  winrate:  1.0  average moves: 3.0
+		  winrate0: 0.0625
+		  winrate1: 0.125
+		  winrate2: 0.1875
+		  winrate3: 0.3125
+		  winrate4: 0.125
+		  winrate5: 0.1875		
+		*/
+	}
+	
+	
 	@Test
 	public void test80_MM_6_4_WinrateCheck() {
 		MasterMind masterMind = new MasterMind(6, 4, ActivationFunction.SIGMOID, ComputationUnit.SET_RANDOMVALUES_FOR_WEIGHTS_SET_BY_NN, 0, 0);
@@ -1252,7 +1341,10 @@ public class AlgoQTest {
 		masterMind.getComputationUnit().setLayer4InReadModus();
 		
 		masterMind.getComputationUnit().loadLayer5();
+		masterMind.getComputationUnit().setLayer5InReadModus();
 		
+		masterMind.getComputationUnit().loadLayer6();
+		masterMind.getComputationUnit().setLayer5InReadModus();
 		
 		double averageMoves = 0.0;
 		double winrate  = 0.0;
@@ -1262,49 +1354,58 @@ public class AlgoQTest {
 		double winrate3 = 0.0;
 		double winrate4 = 0.0;
 		double winrate5 = 0.0;
+		double winrate6 = 0.0;
 		
 		int dm = 0;
 		
+		// ArrayList<String> codeListToGuess = new ArrayList<String>(); 
+		List<String> codeListToGuess = Stream.of("0230", "0303", "0323", "0500", "1405", "2003", "2112", "2154", "2253", "2302", "2420", "3133", "3314", "3420", "3440", "3523", "4315", "4335", "4400", "5043", "5113", "5221", "5235", "5420", "5435").collect(Collectors.toList());
+		
 		for(int i=0; i<100000; i++) { 
-			masterMind.playMachineVsHumanAllCombinations(ComputationUnit.ALGO_Q, 1.0, true, false);
+			// masterMind.playMachineVsHumanAllCombinations(ComputationUnit.ALGO_Q, 1.0, true, false);
+			masterMind.playMachineVsHumanSetOfCombinationMultipleTimes(1, codeListToGuess, ComputationUnit.ALGO_Q, 1.0, true, false);
 			
 			int cdw = GlobalSge.countWarningsDuplicateMoves;
 			if(i%10 == 0) {
 				ResultAllGames result = masterMind.playMachineVsHumanAllCombinations(ComputationUnit.ALGO_NN_WITH_DUPLICATES, 0.0, false, false);
+				// codeListToGuess = result.notFoundCodeList;
+				// System.out.println("" + codeListToGuess.toString());
+
 				winrate = (double)result.gamesWon / (double)result.gamesInTotal;
 
 				averageMoves = result.average;
 				winrate0 = (double)result.gamesWonInOneMove    / (double)result.gamesInTotal;
-				winrate1 = (double)result.gamesWonInTwoMoves   / (double)result.gamesInTotal; // 56610   0.010030864197530864
+				winrate1 = (double)result.gamesWonInTwoMoves   / (double)result.gamesInTotal; 
 				winrate2 = (double)result.gamesWonInThreeMoves / (double)result.gamesInTotal; 
 				winrate3 = (double)result.gamesWonInFourMoves  / (double)result.gamesInTotal;
 				winrate4 = (double)result.gamesWonInFiveMoves  / (double)result.gamesInTotal;
 				winrate5 = (double)result.gamesWonInSixMoves   / (double)result.gamesInTotal;
+				winrate6 = (double)result.gamesWonInSevenMoves / (double)result.gamesInTotal;
 				
 				dm = (GlobalSge.countWarningsDuplicateMoves - cdw);
 			}
 
 			System.out.println("  winrate:  " + winrate + "  average moves: " + averageMoves);
 			System.out.println("  winrate0: " + winrate0);
-			System.out.println("  winrate1: " + winrate1);  // 0.0100
-			System.out.println("  winrate2: " + winrate2);  // 0.0686
+			System.out.println("  winrate1: " + winrate1);  
+			System.out.println("  winrate2: " + winrate2);  
 			System.out.println("  winrate3: " + winrate3);
 			System.out.println("  winrate4: " + winrate4);
 			System.out.println("  winrate5: " + winrate5);
+			System.out.println("  winrate6: " + winrate6);
 			
 			if(winrate >= 1.0) break;
 			
 			if(i%1000 == 999) {
-				masterMind.getComputationUnit().saveLayer5();
+				masterMind.getComputationUnit().saveLayer6();
 			}
 			
 			System.out.println("run number: " + i + "  countWarningsDuplicateMoves: " + dm);
 			System.out.println();
 		}		
-		masterMind.getComputationUnit().saveLayer5();
-	}	
+		masterMind.getComputationUnit().saveLayer6();
+	}
 	
-}
 
 /*
 
@@ -1318,3 +1419,6 @@ public class AlgoQTest {
 run number: 30645  countWarningsDuplicateMoves: 0
 
 */
+	
+	
+}	

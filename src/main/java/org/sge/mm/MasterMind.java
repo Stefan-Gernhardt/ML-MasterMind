@@ -1,6 +1,7 @@
 package org.sge.mm;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.neuralnetworkbasic.ActivationFunction;
 import org.sge.math.MathSge;
@@ -143,7 +144,9 @@ public class MasterMind {
 		for(int combination=0; combination<board.getNumberPossibleCombinations(); combination++) {
 			if(verbose) System.out.println("********************************************************************");
 			if(verbose) System.out.print("" + combination + "  ");
-			ResultOneGame gameResult = playMachineVsHuman(algo, explorationRate, MathSge.convertDecTo(board.getCountColors(), combination, board.getCountDigits()), withLearning, verbose);
+			String code = MathSge.convertDecTo(board.getCountColors(), combination, Board.getCountDigits());
+			
+			ResultOneGame gameResult = playMachineVsHuman(algo, explorationRate, code, withLearning, verbose);
 			resultAllGameCombinations.learnStatisticAllGames.addLearnResultOneGame(gameResult.learnStatisticOneGame);
 			if(verbose) gameResult.print(); 
 			
@@ -152,10 +155,12 @@ public class MasterMind {
 			if(gameResult.codeFound) {
 				sumCountMoves = sumCountMoves + gameResult.movesNeeded;
 				sumGamesWithCodeFound++;
+				resultAllGameCombinations.removeCodeFromTheNotFoundList(code);
 			}
 			else {
 				sumCountMoves = sumCountMoves + board.getNumberPossibleCombinations(); 
 				sumGamesWithCodeNotFound++;
+				resultAllGameCombinations.addCodeToTheNotFoundList(code);
 			}
 			
 			if(gameResult.movesNeeded == 1) resultAllGameCombinations.gamesWonInOneMove++;
@@ -164,6 +169,7 @@ public class MasterMind {
 			if(gameResult.movesNeeded == 4) resultAllGameCombinations.gamesWonInFourMoves++;
 			if(gameResult.movesNeeded == 5) resultAllGameCombinations.gamesWonInFiveMoves++;
 			if(gameResult.movesNeeded == 6) resultAllGameCombinations.gamesWonInSixMoves++;
+			if(gameResult.movesNeeded == 7) resultAllGameCombinations.gamesWonInSevenMoves++;
 		}
 		
 		double averageCountMoves = sumCountMoves / board.getNumberPossibleCombinations(); 
@@ -221,7 +227,7 @@ public class MasterMind {
 	}
 
 
-	public ResultAllGames playMachineVsHumanSetOfCombinationMultipleTimes(int lotsize, ArrayList<String> codeListToGuess, int algo, double explorationRate, boolean withLearning, boolean verbose) {
+	public ResultAllGames playMachineVsHumanSetOfCombinationMultipleTimes(int lotsize, List<String> codeListToGuess, int algo, double explorationRate, boolean withLearning, boolean verbose) {
 		ResultAllGames resultAllGames = new ResultAllGames();
 		resultAllGames.learnStatisticAllGames = new LearnStatisticAllGames();
 		
@@ -233,6 +239,7 @@ public class MasterMind {
 			for(int j=0; j<codeListToGuess.size(); j++) {
 				if(verbose) System.out.println("********************************************************************");
 				if(verbose) System.out.print("round: " + i + "  ");
+				// System.out.println("code to guess: " + j + "  " + codeListToGuess.get(j)); 
 				ResultOneGame gameResult = playMachineVsHuman(algo, explorationRate, codeListToGuess.get(j), withLearning, verbose);
 				resultAllGames.learnStatisticAllGames.addLearnResultOneGame(gameResult.learnStatisticOneGame);
 				if(verbose) gameResult.print(); 

@@ -1359,11 +1359,11 @@ public class AlgoQTest {
 		int dm = 0;
 		
 		// ArrayList<String> codeListToGuess = new ArrayList<String>(); 
-		List<String> codeListToGuess = Stream.of("0230", "0303", "0323", "0500", "1405", "2003", "2112", "2154", "2253", "2302", "2420", "3133", "3314", "3420", "3440", "3523", "4315", "4335", "4400", "5043", "5113", "5221", "5235", "5420", "5435").collect(Collectors.toList());
+		// List<String> codeListToGuess = Stream.of("0230", "0303", "0323", "0500", "1405", "2003", "2112", "2154", "2253", "2302", "2420", "3133", "3314", "3420", "3440", "3523", "4315", "4335", "4400", "5043", "5113", "5221", "5235", "5420", "5435").collect(Collectors.toList());
 		
 		for(int i=0; i<100000; i++) { 
-			// masterMind.playMachineVsHumanAllCombinations(ComputationUnit.ALGO_Q, 1.0, true, false);
-			masterMind.playMachineVsHumanSetOfCombinationMultipleTimes(1, codeListToGuess, ComputationUnit.ALGO_Q, 1.0, true, false);
+			masterMind.playMachineVsHumanAllCombinations(ComputationUnit.ALGO_Q, 1.0, true, false);
+			// masterMind.playMachineVsHumanSetOfCombinationMultipleTimes(1, codeListToGuess, ComputationUnit.ALGO_Q, 1.0, true, false);
 			
 			int cdw = GlobalSge.countWarningsDuplicateMoves;
 			if(i%10 == 0) {

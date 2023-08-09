@@ -32,12 +32,11 @@ public class MMTest {
 		ComputationUnit computationUnit = masterMind.getComputationUnit();
 		
 		assertEquals(1296, computationUnit.getCountOutputNeurons());
-		assertEquals(14344, computationUnit.getCountInputNeurons());
+		assertEquals(32, computationUnit.getCountInputNeurons());
 	}
 
-	
-	//! enable again
 	/*
+	
 	@Test
 	public void test03_OneGuess() {
 		MasterMind masterMind = new MasterMind(4, 2, ComputationUnit.SET_WEIGHTS_WITH_PSEUDO_RANDOM_VALUES, 0.5, 32452345);

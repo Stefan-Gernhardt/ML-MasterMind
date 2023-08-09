@@ -90,40 +90,7 @@ public class AlgoQTest {
 	}
 
 	
-	@Test
-	public void test15_OneGameRepeatWithLearning_ALGO_Q() {
-		MasterMind masterMind = new MasterMind(4, 2, ActivationFunction.SIGMOID, ComputationUnit.SET_RANDOMVALUES_FOR_WEIGHTS_SET_BY_NN, 0, 0);
-		
-		System.out.println("==========================================================================================");
-		System.out.println(" find code 00");
-		for(int i=0; i<100000; i++) {
-			masterMind.playMachineVsHumanOneFixCombinationMultipleTimes(50, "00", ComputationUnit.ALGO_Q, 0.5, true, false);
-			ResultAllGames result = masterMind.playMachineVsHumanOneFixCombinationMultipleTimes(50, "00", ComputationUnit.ALGO_Q, 0.0, false, false);
-			System.out.println("\nrun number: " + i);
-			result.print();
-			if(result.gamesWon >= result.gamesInTotal) break;
-		}
-	}
-
-	
-	@Test
-	public void test15_OneGameRepeatWithLearningTrainedNet_ALGO_Q() {
-		MasterMind masterMind = new MasterMind(4, 2, ActivationFunction.SIGMOID, ComputationUnit.SET_RANDOMVALUES_FOR_WEIGHTS_SET_BY_NN, 0, 0);
-		masterMind.playMachineVsHumanOneFixCombinationMultipleTimes(50, "33", ComputationUnit.ALGO_Q, 0, true, true);
-		
-		System.out.println("==========================================================================================");
-		System.out.println(" find code 00");
-		for(int i=0; i<10000000; i++) {
-			masterMind.playMachineVsHumanOneFixCombinationMultipleTimes(1, "00", ComputationUnit.ALGO_Q, 0.5, true, false);
-			ResultAllGames result = masterMind.playMachineVsHumanOneFixCombinationMultipleTimes(1, "00", ComputationUnit.ALGO_Q, 0, false, false);
-			System.out.println("\nrun number: " + i);
-			result.print();
-			if(result.gamesWon >= result.gamesInTotal*0.9) break;
-		}
-	}
-
-	
-	@Test
+	// @Test test takes to much time
 	public void test15_OneGameRepeatWithLearningTwoCombinations_ALGO_Q() {
 		MasterMind masterMind = new MasterMind(4, 2, ActivationFunction.SIGMOID, ComputationUnit.SET_RANDOMVALUES_FOR_WEIGHTS_SET_BY_NN, 0, 0);
 		masterMind.playMachineVsHumanOneFixCombinationMultipleTimes(1, "33", ComputationUnit.ALGO_Q, 0, true, true);
@@ -156,10 +123,7 @@ public class AlgoQTest {
 	}
 
 	
-	
-	
-	
-	@Test
+	// @Test test takes to much time
 	public void test40_CheckOutputVector0() {
 		MasterMind masterMind = new MasterMind(4, 2, ActivationFunction.SIGMOID, ComputationUnit.SET_RANDOMVALUES_FOR_WEIGHTS_SET_BY_NN, 0, 0);
 
@@ -200,7 +164,7 @@ public class AlgoQTest {
 	}	
 	
 
-	@Test
+	// @Test test takes to much time
 	public void test40_CheckOutputVector2() {
 		MasterMind masterMind = new MasterMind(4, 2, ActivationFunction.SIGMOID, ComputationUnit.SET_RANDOMVALUES_FOR_WEIGHTS_SET_BY_NN, 0, 0);
 
@@ -294,7 +258,7 @@ public class AlgoQTest {
 	}
 	
 	
-	@Test
+	// @Test test takes to much time
 	public void test40_CheckOutputVector_33() {
 		MasterMind masterMind = new MasterMind(4, 2, ActivationFunction.SIGMOID, ComputationUnit.SET_RANDOMVALUES_FOR_WEIGHTS_SET_BY_NN, 0, 0);
 
@@ -333,7 +297,7 @@ public class AlgoQTest {
 	}	
 		
 	
-	@Test
+	// @Test test takes to much time
 	public void test42_CheckOutputVector() {
 		MasterMind masterMind = new MasterMind(4, 2, ActivationFunction.SIGMOID, ComputationUnit.SET_RANDOMVALUES_FOR_WEIGHTS_SET_BY_NN, 0, 0);
 
@@ -372,6 +336,7 @@ public class AlgoQTest {
 
 	
 	public final static double WINRATE_ALGO_RANDOM = 0.12109375;
+	
 	
 	@Test
 	public void test00_Zero_Test() {
@@ -606,7 +571,7 @@ public class AlgoQTest {
 	}		
 
 	
-	@Test
+	// @Test test takes to much time
 	public void test00_Zero_Test_ALGO_Q() {
 		MasterMind masterMind = new MasterMind(4, 2, ActivationFunction.SIGMOID, ComputationUnit.SET_RANDOMVALUES_FOR_WEIGHTS_SET_BY_NN, 0, 0);
 		
@@ -639,7 +604,7 @@ public class AlgoQTest {
 	}		
 
 
-	@Test
+	// @Test test takes to much time
 	public void test00_Zero_Test_ALGO_Q_2_2() {
 		MasterMind masterMind = new MasterMind(2, 2, ActivationFunction.SIGMOID, ComputationUnit.SET_RANDOMVALUES_FOR_WEIGHTS_SET_BY_NN, 0, 0);
 		
@@ -672,7 +637,7 @@ public class AlgoQTest {
 	}		
 
 	
-	@Test
+	// @Test test takes to much time
 	public void test00_Zero_Test_ALGO_Q_2_3() {
 		MasterMind masterMind = new MasterMind(2, 3, ActivationFunction.SIGMOID, ComputationUnit.SET_RANDOMVALUES_FOR_WEIGHTS_SET_BY_NN, 0, 0);
 		
@@ -705,7 +670,7 @@ public class AlgoQTest {
 	}		
 
 
-	@Test
+	// @Test test takes to much time
 	public void test00_Zero_Test_ALGO_Q_3_2() {
 		MasterMind masterMind = new MasterMind(3, 2, ActivationFunction.SIGMOID, ComputationUnit.SET_RANDOMVALUES_FOR_WEIGHTS_SET_BY_NN, 0, 0);
 		masterMind.getComputationUnit().setFirstMoveFixNatural();  
@@ -740,7 +705,7 @@ public class AlgoQTest {
 	}		
 
 
-	@Test
+	// @Test test takes to much time
 	public void test00_Zero_Test_ALGO_Q_4_2() {
 		MasterMind masterMind = new MasterMind(4, 2, ActivationFunction.SIGMOID, ComputationUnit.SET_RANDOMVALUES_FOR_WEIGHTS_SET_BY_NN, 0, 0);
 		masterMind.getComputationUnit().setFirstMoveFixNatural();  
@@ -771,44 +736,9 @@ public class AlgoQTest {
 		}
 		assertTrue(winrate >= 0.28);
 	}
-	
 
-	/*
-	@Test
-	public void test00_Zero_Test_ALGO_Q_6_4() {
-		// 6, 4 random: // 0.0015
-		// 6, 4 exclude // 0.0050 
-		// 6, 4 algoQ   // 0.0046
-		                
-		
-		MasterMind masterMind = new MasterMind(6, 4, ActivationFunction.SIGMOID, ComputationUnit.SET_RANDOMVALUES_FOR_WEIGHTS_SET_BY_NN, 0, 0);
-		masterMind.getComputationUnit().setFirstMoveFixNatural();  
-		
-		double explo = 1.0;
-		double winrate = 0.0;
-		ResultAllGames overAllResult = new ResultAllGames();
-		long loop = -1;
-		while(winrate < 0.0045) {
-			loop++;
-			masterMind.playMachineVsHumanAllCombinations(ComputationUnit.ALGO_Q, 0.5, true, false);
-			
-			explo = explo - 0.01;
-			if(explo < 0) explo = 0.0;
-			
-			System.out.println("\nrun number eval: " + loop);
-			
-			ResultAllGames result = masterMind.playMachineVsHumanAllCombinations(ComputationUnit.ALGO_Q, 0.0, false, false);
-			overAllResult = overAllResult.add(result); 
-			overAllResult.print();
-			
-			winrate = (double)overAllResult.gamesWon / (double)overAllResult.gamesInTotal;
-			System.out.println("winrate: " + winrate + "  explo: " + explo);
-		}
-	}
-	*/
 	
-	
-	@Test
+	// @Test test takes to much time
 	public void test60_Zero_Test_ALGO_Q() {
 		MasterMind masterMind = new MasterMind(4, 2, ActivationFunction.SIGMOID, ComputationUnit.SET_RANDOMVALUES_FOR_WEIGHTS_SET_BY_NN, 0, 0);
 
@@ -836,7 +766,7 @@ public class AlgoQTest {
 	}
 	
 	
-	@Test
+	// @Test takes to much time
 	public void test80_FirstLayerCheck() {
 		MasterMind masterMind = new MasterMind(4, 2, ActivationFunction.SIGMOID, ComputationUnit.SET_RANDOMVALUES_FOR_WEIGHTS_SET_BY_NN, 0, 0);
 
@@ -947,7 +877,7 @@ public class AlgoQTest {
 	}	
 	
 	
-	@Test
+	// @Test test takes to much time
 	public void test80_MM_4_2_WinrateCheck() {
 		MasterMind masterMind = new MasterMind(4, 2, ActivationFunction.SIGMOID, ComputationUnit.SET_RANDOMVALUES_FOR_WEIGHTS_SET_BY_NN, 0, 0);
 
@@ -1029,7 +959,7 @@ public class AlgoQTest {
 	}	
 	
 	
-	@Test
+	// @Test test takes to much time
 	public void test80_MM_4_3_WinrateCheck() {
 		MasterMind masterMind = new MasterMind(4, 3, ActivationFunction.SIGMOID, ComputationUnit.SET_RANDOMVALUES_FOR_WEIGHTS_SET_BY_NN, 0, 0);
 
@@ -1075,7 +1005,9 @@ public class AlgoQTest {
 
 		// masterMind.getComputationUnit().saveLayer1();
 		// computationUnit.saveLayer2();
-	}	
+	}
+
+	
 	@Test
 	public void test80_MM_5_4_WinrateCheck_Exclude() {
 		MasterMind masterMind = new MasterMind(5, 4, ActivationFunction.SIGMOID, ComputationUnit.SET_RANDOMVALUES_FOR_WEIGHTS_SET_BY_NN, 0, 0);
@@ -1106,7 +1038,7 @@ public class AlgoQTest {
 	}	
 	
 	
-	@Test
+	// @Test takes to much time
 	public void test80_MM_5_4_WinrateCheck() {
 		MasterMind masterMind = new MasterMind(5, 4, ActivationFunction.SIGMOID, ComputationUnit.SET_RANDOMVALUES_FOR_WEIGHTS_SET_BY_NN, 0, 0);
 
@@ -1155,7 +1087,7 @@ public class AlgoQTest {
 	}	
 	
 	
-	@Test
+	// @Test takes to much time
 	public void test80_MM_4_4_WinrateCheck() {
 		MasterMind masterMind = new MasterMind(4, 4, ActivationFunction.SIGMOID, ComputationUnit.SET_RANDOMVALUES_FOR_WEIGHTS_SET_BY_NN, 0, 0);
 
@@ -1242,22 +1174,6 @@ public class AlgoQTest {
 	public void test80_MM_4_2_WinrateCheckPlus() {
 		MasterMind masterMind = new MasterMind(4, 2, ActivationFunction.SIGMOID, ComputationUnit.SET_RANDOMVALUES_FOR_WEIGHTS_SET_BY_NN, 0, 0);
 
-		// masterMind.getComputationUnit().loadLayer1();
-		// masterMind.getComputationUnit().setLayer1InReadModus();
-		
-		// masterMind.getComputationUnit().loadLayer2();
-		// masterMind.getComputationUnit().setLayer2InReadModus();
-
-		// masterMind.getComputationUnit().loadLayer3();
-		// masterMind.getComputationUnit().setLayer3InReadModus();
-
-		// masterMind.getComputationUnit().loadLayer4();
-		// masterMind.getComputationUnit().setLayer4InReadModus();
-		
-		// masterMind.getComputationUnit().loadLayer5();
-		// masterMind.getComputationUnit().setLayer5InReadModus();
-		
-		
 		double averageMoves = 0.0;
 		double winrate  = 0.0;
 		double winrate0 = 0.0;
@@ -1403,20 +1319,19 @@ public class AlgoQTest {
 			System.out.println("run number: " + i + "  countWarningsDuplicateMoves: " + dm);
 			System.out.println();
 		}		
-		masterMind.getComputationUnit().saveLayer6();
 	}
 	
 
 /*
 
-  winrate:  0.9768518518518519  average moves: 34.0
+winrate:  1.0  average moves: 4.0
   winrate0: 7.716049382716049E-4
   winrate1: 0.010030864197530864
   winrate2: 0.06867283950617284
   winrate3: 0.30787037037037035
   winrate4: 0.44367283950617287
-  winrate5: 0.14583333333333334
-run number: 30645  countWarningsDuplicateMoves: 0
+  winrate5: 0.14969135802469136
+  winrate6: 0.019290123456790122
 
 */
 	

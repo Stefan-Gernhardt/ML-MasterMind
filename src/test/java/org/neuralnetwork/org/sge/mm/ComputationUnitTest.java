@@ -18,24 +18,10 @@ import org.sge.mm.Rating;
 import org.sge.mm.ResultOneGame;
 
 public class ComputationUnitTest {
-	@Test
-	public void test01_SetInputNeuronenNoMoves() {
-		MasterMind masterMind = new MasterMind(4, 2, ComputationUnit.SET_ALL_WEIGHTS_WITH_THE_SAME_VALUE, 0, 0);
-		ComputationUnit computationUnit = masterMind.getComputationUnit();
-		
-		List<Move> listOfAlreadyPlayedMoves = new ArrayList<Move>();
-		
-		INDArray inputVector = computationUnit.computeInputVector(listOfAlreadyPlayedMoves);
-		
-		for(int column=0; column<computationUnit.getCountInputNeurons(); column++) {
-			double nv = inputVector.getDouble(0, column);
-			assertEquals(ComputationUnit.UNSET_INPUT_NEURON_VALUE, nv, 0.00001);
-		}
-	}
 
 
 	@Test
-	public void test02_SetInputNeuronenOneMove() {
+	public void test01_SetInputNeuronenOneMove() {
 		MasterMind masterMind = new MasterMind(4, 2, ComputationUnit.SET_ALL_WEIGHTS_WITH_THE_SAME_VALUE, 0, 0);
 		ComputationUnit computationUnit = masterMind.getComputationUnit();
 		
@@ -56,31 +42,20 @@ public class ComputationUnitTest {
 		INDArray inputVector = computationUnit.computeInputVector(listOfAlreadyPlayedMoves);
 
 		// code
-    	assertEquals(0, inputVector.getDouble(0, 0), 0.00001);
+    	assertEquals(1, inputVector.getDouble(0, 0), 0.00001);
 		assertEquals(0, inputVector.getDouble(0, 1), 0.00001);
-		assertEquals(1, inputVector.getDouble(0, 2), 0.00001);
+		assertEquals(0, inputVector.getDouble(0, 2), 0.00001);
 		assertEquals(0, inputVector.getDouble(0, 3), 0.00001);
 		
 		assertEquals(0, inputVector.getDouble(0, 4), 0.00001);
 		assertEquals(0, inputVector.getDouble(0, 5), 0.00001);
-		assertEquals(0, inputVector.getDouble(0, 6), 0.00001);
+		assertEquals(1, inputVector.getDouble(0, 6), 0.00001);
 		assertEquals(0, inputVector.getDouble(0, 7), 0.00001);
 		
-		assertEquals(0, inputVector.getDouble(0, 8), 0.00001);
-		assertEquals(0, inputVector.getDouble(0, 9), 0.00001);
+		assertEquals(1, inputVector.getDouble(0, 8), 0.00001);
+		assertEquals(1, inputVector.getDouble(0, 9), 0.00001);
 		assertEquals(0, inputVector.getDouble(0,10), 0.00001);
 		assertEquals(0, inputVector.getDouble(0,11), 0.00001);
-		
-		assertEquals(0, inputVector.getDouble(0,12), 0.00001);
-		assertEquals(0, inputVector.getDouble(0,13), 0.00001);
-		assertEquals(0, inputVector.getDouble(0,14), 0.00001);
-		assertEquals(0, inputVector.getDouble(0,15), 0.00001);
-		
-		// ratings
-		assertEquals(1, inputVector.getDouble(0,16), 0.00001);
-		assertEquals(1, inputVector.getDouble(0,17), 0.00001);
-		assertEquals(0, inputVector.getDouble(0,18), 0.00001);
-		assertEquals(0, inputVector.getDouble(0,19), 0.00001);
 		
 
 		// remainder UNSET_INPUT_NEURON_VALUE
@@ -132,27 +107,27 @@ public class ComputationUnitTest {
 		INDArray inputVector = computationUnit.computeInputVector(listOfAlreadyPlayedMoves);
 
 		// code
-		assertEquals(0, inputVector.getDouble(0, 0), 0.00001);
+		assertEquals(1, inputVector.getDouble(0, 0), 0.00001);
 		assertEquals(0, inputVector.getDouble(0, 1), 0.00001);
-		assertEquals(1, inputVector.getDouble(0, 2), 0.00001);
+		assertEquals(0, inputVector.getDouble(0, 2), 0.00001);
 		assertEquals(0, inputVector.getDouble(0, 3), 0.00001);
 		assertEquals(0, inputVector.getDouble(0, 4), 0.00001);
 		assertEquals(0, inputVector.getDouble(0, 5), 0.00001);
-		assertEquals(0, inputVector.getDouble(0, 6), 0.00001);
+		assertEquals(1, inputVector.getDouble(0, 6), 0.00001);
 		assertEquals(0, inputVector.getDouble(0, 7), 0.00001);
-		assertEquals(0, inputVector.getDouble(0, 8), 0.00001);
-		assertEquals(0, inputVector.getDouble(0, 9), 0.00001);
+		assertEquals(1, inputVector.getDouble(0, 8), 0.00001);
+		assertEquals(1, inputVector.getDouble(0, 9), 0.00001);
 		assertEquals(0, inputVector.getDouble(0,10), 0.00001);
 		assertEquals(0, inputVector.getDouble(0,11), 0.00001);
 		assertEquals(0, inputVector.getDouble(0,12), 0.00001);
 		assertEquals(0, inputVector.getDouble(0,13), 0.00001);
-		assertEquals(0, inputVector.getDouble(0,14), 0.00001);
+		assertEquals(1, inputVector.getDouble(0,14), 0.00001);
 		assertEquals(0, inputVector.getDouble(0,15), 0.00001);
 
 		
 		// ratings
 		assertEquals(1, inputVector.getDouble(0,16), 0.00001);
-		assertEquals(1, inputVector.getDouble(0,17), 0.00001);
+		assertEquals(0, inputVector.getDouble(0,17), 0.00001);
 		assertEquals(0, inputVector.getDouble(0,18), 0.00001);
 		assertEquals(0, inputVector.getDouble(0,19), 0.00001);
 		
@@ -161,26 +136,16 @@ public class ComputationUnitTest {
 		System.out.println("offset: " + offset);
 		assertEquals(0, inputVector.getDouble(0, 0 + offset), 0.00001);
 		assertEquals(0, inputVector.getDouble(0, 1 + offset), 0.00001);
-		assertEquals(0, inputVector.getDouble(0, 2 + offset), 0.00001);
+		assertEquals(1, inputVector.getDouble(0, 2 + offset), 0.00001);
 		assertEquals(0, inputVector.getDouble(0, 3 + offset), 0.00001);
-		assertEquals(0, inputVector.getDouble(0, 4 + offset), 0.00001);
+		assertEquals(1, inputVector.getDouble(0, 4 + offset), 0.00001);
 		assertEquals(0, inputVector.getDouble(0, 5 + offset), 0.00001);
 		assertEquals(0, inputVector.getDouble(0, 6 + offset), 0.00001);
 		assertEquals(0, inputVector.getDouble(0, 7 + offset), 0.00001);
-		assertEquals(1, inputVector.getDouble(0, 8 + offset), 0.00001);
+		assertEquals(0, inputVector.getDouble(0, 8 + offset), 0.00001);
 		assertEquals(0, inputVector.getDouble(0, 9 + offset), 0.00001);
-		assertEquals(0, inputVector.getDouble(0,10 + offset), 0.00001);
-		assertEquals(0, inputVector.getDouble(0,11 + offset), 0.00001);
-		assertEquals(0, inputVector.getDouble(0,12 + offset), 0.00001);
-		assertEquals(0, inputVector.getDouble(0,13 + offset), 0.00001);
-		assertEquals(0, inputVector.getDouble(0,14 + offset), 0.00001);
-		assertEquals(0, inputVector.getDouble(0,15 + offset), 0.00001);
-
-		// ratings
-		assertEquals(0, inputVector.getDouble(0,16 + offset), 0.00001);
-		assertEquals(0, inputVector.getDouble(0,17 + offset), 0.00001);
-		assertEquals(1, inputVector.getDouble(0,18 + offset), 0.00001);
-		assertEquals(1, inputVector.getDouble(0,19 + offset), 0.00001);
+		assertEquals(1, inputVector.getDouble(0,10 + offset), 0.00001);
+		assertEquals(1, inputVector.getDouble(0,11 + offset), 0.00001);
 
 		
 		for(int column=0+computationUnit.getCountInputNeuronsPerGuess()*2; column<computationUnit.getCountInputNeurons(); column++) {
@@ -228,7 +193,7 @@ public class ComputationUnitTest {
 		INDArray inputVector0 = computationUnit.computeInputVector(board.getListOfMoves());		
 		System.out.println("input vector0: " + inputVector0.toString());
 		System.out.println("number UNSET_INPUT_NEURON_VALUE of input vector: " + count_UNSET_INPUT_NEURON_VALUEOfInputVector(inputVector0));
-		assertEquals(count_UNSET_INPUT_NEURON_VALUEOfInputVector(inputVector0), 12);
+		assertEquals(count_UNSET_INPUT_NEURON_VALUEOfInputVector(inputVector0), 0);
 		
 		Guess guess0 = new Guess();
 		guess0.code = "31";

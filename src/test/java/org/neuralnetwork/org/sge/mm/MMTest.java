@@ -35,8 +35,8 @@ public class MMTest {
 		assertEquals(32, computationUnit.getCountInputNeurons());
 	}
 
+
 	/*
-	
 	@Test
 	public void test03_OneGuess() {
 		MasterMind masterMind = new MasterMind(4, 2, ComputationUnit.SET_WEIGHTS_WITH_PSEUDO_RANDOM_VALUES, 0.5, 32452345);
@@ -45,8 +45,8 @@ public class MMTest {
 		masterMind.getBoard().setCodeToFind(code);
 
 		
-		Guess guess = masterMind.getComputationUnit().getGuessAlgoNN(masterMind.getBoard().getListOfMoves(), true);
-		Rating rating = masterMind.getBoard().setGuessOnBoard(guess).rating;
+		Guess guess = masterMind.getComputationUnit().getGuessAlgoNN(masterMind.getBoard().getListOfMoves(), 0, false);
+		Rating rating = masterMind.getBoard().setGuessOnBoard(guess, true).rating;
 		System.out.println("code to find: " + code + "  guess: " + guess.code + "  rating black: " + rating.countBlack + "  white: " + rating.countWhite);
 
 	
